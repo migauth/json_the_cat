@@ -1,7 +1,7 @@
 // Import request library
 const request = require("request");
 
-const fetchBreedDescription = function (breedName, callback) {
+const fetchBreedDescription = function(breedName, callback) {
 
   const urlData = `https://api.thecatapi.com/v1/breeds/search?q=${encodeURIComponent(breedName)}`;
 
