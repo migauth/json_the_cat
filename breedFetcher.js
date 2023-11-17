@@ -1,34 +1,28 @@
-// // Allows for inputing arguments through the comand line.
-// const arg = process.argv;
-// let argArr = arg.slice(2);
-
 // Import request library
 const request = require("request");
 
-// The breed argument in command line input
-// const breedName = argArr[0];
-
-// Api link for fetching cat data
-// let urlData = `https://api.thecatapi.com/v1/breeds/search?q=${breed}`;
-
-
 const fetchBreedDescription = function (breedName, callback) {
-  const urlData = `https://api.thecatapi.com/v1/breeds/search?q=${breedName}`;
 
-  try { // Check if valid URL
-    request(urlData, (error, response, body) => {
-      const data = JSON.parse(body);
-      try { // Check if breed exists
-        callback(error, data[0].description);
-      } catch (error) {
-        callback("Breed does not exist!");
-      }
-    });
-    
-  } catch (error) {
-    callback("Error: Invalid URL!");
-  }
+  const urlData = `https://api.thecatapi.com/v1/breeds/search?q=${encodeURIComponent(breedName)}`;
 
+  request(urlData, (error, response, body) => {
+    if (error) {
+      return callback(error, null); // Pass any request errors to the callback
+    }
+
+    let data;
+    try {
+      data = JSON.parse(body); // Try parsing the JSON body
+    } catch (e) {
+      return callback(e, null); // Handle errors due to invalid JSON
+    }
+
+    if (data.length === 0) {
+      callback(new Error('Breed does not exist'), null); // Handle the scenario where the breed is not found
+    } else {
+      callback(null, data[0].description); // Successfully return the breed description
+    }
+  });
 };
 
 module.exports = { fetchBreedDescription };
