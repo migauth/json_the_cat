@@ -1,27 +1,35 @@
-// Allows for inputing arguments through the comand line.
-const arg = process.argv;
-let argArr = arg.slice(2);
+// // Allows for inputing arguments through the comand line.
+// const arg = process.argv;
+// let argArr = arg.slice(2);
 
 // Import request library
 const request = require("request");
 
 // The breed argument in command line input
-const breed = argArr[0];
+// const breedName = argArr[0];
 
 // Api link for fetching cat data
-let urlData = `https://api.thecatapi.com/v1/breeds/search?q=${breed}`;
+// let urlData = `https://api.thecatapi.com/v1/breeds/search?q=${breed}`;
 
 
-try { // Check if valid URL
-  request(urlData, (error, response, body) => {
-    const data = JSON.parse(body);
-    try { // Check if breed exists
-      console.log(data[0].description);
-    } catch (error) {
-      console.log("Error: Breed not found!");
-    }
-  });
-  
-} catch (error) {
-  console.log("Error: Invalid URL!");
-}
+const fetchBreedDescription = function (breedName, callback) {
+  const urlData = `https://api.thecatapi.com/v1/breeds/search?q=${breedName}`;
+
+  try { // Check if valid URL
+    request(urlData, (error, response, body) => {
+      const data = JSON.parse(body);
+      try { // Check if breed exists
+        callback(error, data[0].description);
+      } catch (error) {
+        callback("Breed does not exist!");
+      }
+    });
+    
+  } catch (error) {
+    callback("Error: Invalid URL!");
+  }
+
+};
+
+module.exports = { fetchBreedDescription };
+
